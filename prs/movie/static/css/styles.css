@@ -1,0 +1,68 @@
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+#nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:700px;
+    width:100px;
+    float:left;
+    padding:5px;        
+}
+#section {
+    width:850px;
+    float:left;
+    padding:10px;    
+}
+#footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+   padding:5px;
+} 
+.movie {
+  width: 100px;
+  height: 150px;
+}
+.movie_details {
+  width: 150px;
+  height: 225px;
+}.td_movie {
+  width: 100px;
+  height: 150px;
+  margin: 5px;
+  border: 1px solid #ffffff;  
+}
+.left{
+  float: left;
+  width: 610px;
+}
+.right {
+  height:700px;
+  width: 200px;
+  float: right;
+  margin-right: 2px;
+}
+.bottom {
+  bottom: 0px;
+  vertical-align: bottom;
+  align-self: flex-end;
+}
+.movie_poster{
+  float: left;   
+  width: 150px;
+}
+.detail_data{
+  float: right;
+  width: 400px;
+  margin-right: 2px;
+
+}
+.caption {
+    width: 300px;
+    margin-left: 10px;
+}
