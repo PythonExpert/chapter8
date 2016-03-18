@@ -1,45 +1,84 @@
-#header {
+.wrapper {
+    width: 100%;
+    min-height: 100%;
+}
+
+.inner {
+    overflow: auto;
+    padding: 0 0 150px;
+    margin: 0 auto;
+    width: 94%;
+    max-width: 1200px;
+}
+
+header {
     background-color:black;
     color:white;
     text-align:center;
     padding:5px;
+    max-width: 1200px;
 }
-#nav {
+.container{
+    max-width: 900px;
+}
+.nav {
     line-height:30px;
     background-color:#eeeeee;
-    height:700px;
+    height:100%;
     width:100px;
     float:left;
-    padding:5px;        
+    padding:5px;
 }
-#section {
-    width:850px;
+section {
+    width:350px;
     float:left;
-    padding:10px;    
+    padding:10px;
 }
-#footer {
-    background-color:black;
-    color:white;
-    clear:both;
-    text-align:center;
-   padding:5px;
-} 
+.header_left {
+    float:left;
+    width:85%;
+    max-width: 700px;
+}
+.header_right {
+    float:left;
+    width: 15%;
+}
+.logo {
+	width:31%;
+}
+
 .movie {
-  width: 100px;
-  height: 150px;
+  width: 130px;
+  height: 200px;
 }
-.movie_details {
-  width: 150px;
-  height: 225px;
-}.td_movie {
-  width: 100px;
-  height: 150px;
-  margin: 5px;
-  border: 1px solid #ffffff;  
+.div_movie {
+    float:left;
+	display:inline;
+    width: 130px;
+    height: 200px;
+    margin: 0px;
+    border: 1px solid #000000;
+}
+.movie_area {
+    float: left;
+    margin: 0px;
+    display: block;
+    max-width: 800px;
+}
+.pagination {
+    display: block;
+    clear: both;
+}
+.clearBoth {
+    clear:both;
 }
 .left{
+   white-space:nowrap;
+   line-height:0;
+    vertical-align: top;
+  margin: 0px;
   float: left;
-  width: 610px;
+  width: 800px;
 }
 .right {
   height:700px;
@@ -53,11 +92,16 @@
   align-self: flex-end;
 }
 .movie_poster{
-  float: left;   
-  width: 150px;
+  float: left;
+  width: 200px;
 }
-.detail_data{
+.caption{
   float: right;
+  width: 200px;
+}
+
+.detail_data{
+  float: left;
   width: 400px;
   margin-right: 2px;
 
@@ -65,4 +109,14 @@
 .caption {
     width: 300px;
     margin-left: 10px;
+}
+.popover{
+    width:200px;
+    height:250px;
+}
+#details {
+ float: left;
+}
+#genre{
+
 }

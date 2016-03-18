@@ -1,7 +1,9 @@
 function postEvidence(user_id, content_id, session_id, event) {
 
     var now = new Date();
-    var dateString = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + ' ' + now.getUTCHours() + ':' + now.getMinutes(); 
+    var month = now.getMonth() + 1;
+
+    var dateString = now.getFullYear() + '-' + month + '-' + now.getDate() + ' ' + now.getUTCHours() + ':' + now.getMinutes();
     $.ajax({  
           type: 'GET',  
           url: 'http://moviegeek.com:8000/log/' 

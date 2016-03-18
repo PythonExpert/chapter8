@@ -47,4 +47,29 @@ class Movies(models.Model):
     class Meta:
         db_table = 'movies'
 
-    
+
+class UserProfile(models.Model):
+    MALE = 'M'
+    FEMALE = 'F'
+    genders = (
+        (MALE, 'Male'),
+        (FEMALE, 'Female')
+    )
+    user = models.OneToOneField(User, related_name="profile") 					#A
+    externalUserId = models.IntegerField(blank=False)
+    gender = models.CharField(max_length=1, choices=genders, blank=True)
+    age = models.IntegerField(blank=True, null=True)
+    nationality = models.CharField(max_length=50, blank=True)
+    living_country = models.CharField(max_length=50, blank=True)
+    living_city = models.CharField(max_length=50, blank=True)
+    martialstatus = models.CharField(max_length=20, blank=True)
+    hobby = models.CharField(max_length=250, blank=True)
+    eating_habits = models.CharField(max_length=150, blank=True)
+    additionals = models.CharField(max_length=250, blank=True) 		#B
+
+      # Override the __unicode__() method to return out something meaningful!
+    def __unicode__(self):
+        return self.user.username
+
+    class Meta:
+        db_table = 'user_profiles'

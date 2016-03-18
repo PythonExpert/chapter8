@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'movie',
     'evidenceCollector',
     'analytics',
+    'recommender',
 )
 
 MIDDLEWARE_CLASSES = (

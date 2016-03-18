@@ -15,44 +15,70 @@
    <script>
       $(document).ready(function(){
         $('[data-toggle="popover"]').popover();
-
-        $('.movie').on('show.bs.popover', function () {         
-                var userid;
-                var contentid;
-                sessionid ='{{ sessionid }}';      
-                userid = '{{user_id}}';      
-                contentid = $(this).attr("data-contentid");
-                postEvidence(userid, contentid, sessionid,"details");
-              });
+	 
+       $('.movie').on('show.bs.popover', function () {
+            contentid = $(this).attr("data-contentid");
+            PostEvent(contentid,"details");
+ 			});
       });
-       function PostGenreEvent(a) {
-        postEvidence('{{user_id}}', $(a).data("contentid"), '{{ sessionid }}', 'genre');
-      }      
-      function PostMoreDetailsEvent(a) {
-        postEvidence('{{user_id}}', $(a).data("contentid"), '{{ sessionid }}', 'moredetails');
-      };
+	  function PostEvent(contentid, eventType){
+        var userid;
+        var contentid;
+        sessionid = '{{sessionid}}';
+        userid = '{{user_id}}';
+        postEvidence(userid, contentid, sessionid, eventType);
+      }
 
-      function PostEvent(a, eventType) {
-        postEvidence('{{user_id}}', $(a).data("contentid"), '{{ sessionid }}', eventType);
+      function PostMoreDetailsEvent(a) {
+        postEvent($(a).data("contentid"), 'moredetails');
       };
 
       function PostSaveForLaterEvidence(a) {
-        postEvidence('{{user_id}}', $(a).data("contentid"), '{{ sessionid }}', 'SaveForLater');
+        postEvidence($(a).data("userid"), $(a).data("contentid"), $(a).data("sessionid"), 'SaveForLater');
       };
-      function PostRecClicked(content_id,rec_type) {
-        postEvidence('{{user_id}}', content_id, '{{ sessionid }}', rec_type);
-      };
-
-
    </script>
  </head>
  <body>
+<div class="wrapper">
+        <div class="inner">
   {% block header %}
-   <div id="header">
-     <h1>Movie GEEKS</h1>
-   </div>
+   <header id="header">
+           <div class="container">
+            <div class="header_left"><h1>Movie GEEKs</h1> </div>
+            <div class="header_right">
+                {% if user.is_authenticated %}
+                <h4>Welcome {{ user.username }}!</h4>
+                <a href="logout">logout</a>
+                {% else %}
+                <h4>Welcome somebody!</h4> <br/>
+                <a href="login">login</a> | <a href="register">register</a>
+                {% endif %}
+            </div>
+           </div>
+        </header>
   {% endblock header %}
-   <div id="nav">{% block section%}{% endblock section%}</div>
+   <div class="nav">
+    {% if not genres %}
+                No genres found
+    {% else %}
+       {% for genre in genres %}
+
+            {% if genre.genre.strip == genre_name %}
+                <b>
+            {% endif %}
+        <a onclick='PostEvent({{genre.genre.strip}}, "genre")'
+        href="/genre/{{genre.genre.strip}}">{{genre.genre}}</a>
+            {% if genre.genre.strip == genre_name %}
+                </b>
+            {% endif %}
+       <br />
+      {% endfor %}
+    {% endif %}
+		{% block section%}{% endblock section%}
+	</div>
    <div id="section">{% block main %}{% endblock %}</div>
+
+        </div>
+    </div>
  </body>
 </html>

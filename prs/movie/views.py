@@ -7,9 +7,16 @@ from django.template.loader import get_template
 from django.template import RequestContext
 from django.template.context import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
 
 from movie.models import Movies
 from movie.models import Genres
+from movie.models import UserProfile
+
+from movie.forms import UserForm
+from movie.forms import UserProfileForm
 
 def index(request): 
     qs = request.GET
@@ -44,16 +51,17 @@ def index(request):
     return HttpResponse(template.render(context))
 
 def detail(request, movie_id):
-	movie = Movies.objects.get(id= movie_id)
-	template = get_template('details.html')
-
-	context = RequestContext(request, {
+    movie = Movies.objects.get(id= movie_id)
+    genres = Genres.objects.distinct('genre')
+    template = get_template('details.html')
+    context = RequestContext(request, {
 	  'sessionid' : checkSessionId(request),
+        'genres' : genres,
         'movie': movie,
         'user': request.user,
         'user_id' : ensureUserId(request),
 	})
-	return HttpResponse(template.render(context))
+    return HttpResponse(template.render(context))
 
 def genre(request, genre_name): 
 
@@ -77,14 +85,75 @@ def genre(request, genre_name):
 
     template = get_template('index.html')
     context = RequestContext(request, {
-        'sessionid' : checkSessionId(request),
+        'sessionid': checkSessionId(request),
         'user_id': ensureUserId(request),
         'number_of_movies': number_of_movies,
         'movies': movies,
-        'genres' : genres,
-        'genre_name' : genre_name,
+        'genres': genres,
+        'genre_name': genre_name,
     })
     return HttpResponse(template.render(context))
+
+
+def user_login(request):
+
+    if request.method == 'POST': 					#A
+        username = request.POST.get('username')			#B
+        password = request.POST.get('password')			#B
+
+        user = authenticate(username=username, password=password)#C
+        if user:							#D
+            if user.is_active:					#E
+                login(request, user)				#F
+                user_profile = user.profile
+                request.session['user_id'] = user_profile.externalUserId #G
+                return HttpResponseRedirect('/')
+            else:
+                return HttpResponse("Your MovieGEEKs account is disabled.")
+        else:
+            print ("Invalid login details: {0}, {1}".format(username, password))
+            return HttpResponse("Invalid login details supplied.")
+    else:
+        return render(request, 'login.html', {})       		#H
+
+def user_logout(request):						#C
+    logout(request)
+    return HttpResponseRedirect('/')
+
+
+def register(request):
+
+    registered = False
+
+    if request.method == 'POST':
+
+        user_form = UserForm(data=request.POST)				#A
+        profile_form = UserProfileForm(data=request.POST)		#B
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+
+            user.set_password(user.password)
+            user.save()							#C
+
+            profile = profile_form.save(commit=False)
+            profile.user = user						#D
+
+            profile.save()							#E
+
+            registered = True
+
+        else:
+            print(user_form.errors, profile_form.errors)
+    else:
+        user_form = UserForm()
+        profile_form = UserProfileForm()
+
+    return render(request,
+                  'register.html',
+                  {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
+
+
 
 def ensureUserId(request): 
     if not "user_id" in request.session:

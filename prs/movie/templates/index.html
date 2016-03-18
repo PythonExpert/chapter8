@@ -12,7 +12,7 @@
             result.forEach(function(element, index, array) {
               
                 row.insertCell(index).innerHTML = '<a ' + 
-                               'onclick=\'PostRecClicked(\"' 
+                               'onclick=\'PostEvent(\"'
                                + element.target + '\", \"rec:seedrec\")\''
                               + "href='/movie/"+ element.target + "'>"
                               + "<img class='movie' src='" + element.rtpictureurl + "' />"
@@ -25,6 +25,40 @@
             }
           })
         }
+        function getCfRecs(url, divid, tableid)
+        {
+          $.getJSON(url + {{user_id }}, function(result) {
+            var table = document.getElementById(tableid);
+
+            var rowcount = table.rows.length;
+            var row = table.insertRow(rowcount);
+
+            result.forEach(function(element, index, array) {
+
+                row.insertCell(index).innerHTML = '<a ' +
+                               'onclick=\'PostEvent(\"'
+                               + element.target + '\", \"rec:cf\")\''
+                              + "href='/movie/"+ element.target + "'>"
+                              + "<img class='movie' src='" + element.rtpictureurl + "' />"
+                              + "</a>" ;
+            });
+
+            if (result.length > 0) {
+                var recsDiv = document.getElementById(divid)
+                recsDiv.style.visibility = "visible" ;
+            }
+          })
+        }
+        function getCfURecs()
+        {
+          getCfRecs('/rec/collaborative/user/', "cfu_recs", "cfu_recsTable");
+        }
+
+        function getCfIRecs()
+        {
+          getCfRecs('/rec/collaborative/item/', "cfi_recs", "cfi_recsTable");
+        }
+
         function getTopContent() {
           
           $.getJSON('/rec/chart', function(result) {
@@ -51,46 +85,52 @@
     </script>
    {% if movies %}
     <div class="left">
-     <table>
-        <tr>
-            {% for movie in movies %}
-                <td class="td_movie" 
-                    data-movie-item="{{movie.id}}">
-                    <img class="movie" 
-                        tabindex="0" 
-                        role="button" 
-                        data-html="true" 
-                        data-toggle="popover" 
-                        data-trigger="focus" 
-                        title="{{ movie.title}}" 
-                        data-contentid="{{movie.id}}" 
-                        data-content="
-                            Year: {{movie.year}} 
+        <div class="movie_area">
+     {% for movie in movies %}
+                <div class="div_movie" data-movie-item="{{movie.id}}">
+                    <img class="movie"
+                        tabindex="0"
+                        role="button"
+                        data-html="true"
+                        data-toggle="popover"
+                        data-trigger="focus"
+                        title="{{ movie.title}}"
+                        data-contentid="{{movie.id}}"
+                        data-content="<div class='popover_class'>
+                            Year: {{movie.year}}
                             <br/>
-                            Rotten Tomate rating: {{ movie.rtallcriticsrating }} 
-                            <br /> 
-                            <a onclick='PostSaveForLaterEvidence(this)' 
-                               href='#' 
-                               data-html='true' 
-                               data-contentid='{{movie.id}}'>save for later</a> 
+                            Rotten Tomate rating: {{ movie.rtallcriticsrating }}
                             <br />
-                            <a href='/movie/{{movie.id}}' 
-                            data-html='true' 
-                            data-contentid='{{movie.id}}'' onclick='PostMoreDetailsEvent(this)'
-                            >more details</a>" 
+                            <a onclick='PostEvent({{movie.id}}, 'SaveForLater')'
+                               href='#' >save for later</a>
+                            <br />
+                            <a href='/movie/{{movie.id}}'
+                            data-html='true'
+                            onclick='PostEvent({{movie.id}}, 'MoreDetails')'
+                            >more details</a>
+                         </div>"
                     src="{{movie.rtpictureurl.strip}}" />
-                </td>
-                {% if forloop.counter|divisibleby:6%}
-                    </tr><tr>
-                {% endif  %}
+                </div>
             {% endfor %}
-        </table>
-        <div id="recs" style = "visibility: hidden">
-           <h3>Recommended for you</h3>
+<p class="clearBoth"></p>
+
+            <div id="recs" style = "visibility: hidden">
+           <h3>Recommended for you, based on your recent buys</h3>
            <table id="recsTable">
             </table>
-    </div>
-
+    	</div>
+        <div id="cfu_recs" style="visibility: hidden">
+            <h3>Similar users also liked (user)</h3>
+            <table id="cfu_recsTable">
+            </table>
+        </div>
+        <div id="cfi_recs" style="visibility: hidden">
+            <h3>Similar users also liked (item)</h3>
+            <table id="cfi_recsTable">
+            </table>
+        </div>
+            </div>
+ <p class="clearBoth"></p>
     <div class="pagination">
         <span class="step-links">
             {% if movies.has_previous %}
@@ -114,7 +154,9 @@
     </table>
     <script type="text/javascript">
         getTopContent();
-        getRecs()
+        getRecs();
+        getCfURecs();
+        getCfIRecs();
     </script>
 
     <div class="bottom"> <i> Number of movies found: {{number_of_movies}} </i> </div>
@@ -122,17 +164,7 @@
         {% else %}
             <p>No movies available.</p>
     {% endif %}
-
 {% endblock main %}
 
-{% block section%}
-{% if not genres %}
-        No genres found
-{% else %}
-  {% for genre in genres %}
-    <a onclick='PostGenreEvidence(this)' 
-    href="/genre/{{genre.genre.strip}}?sessionid={{sessionid}}&userid={{userid}}">{{genre.genre}}</a><br />
-  {% endfor %}
-{% endif %}
-{% endblock section%}
+
 
