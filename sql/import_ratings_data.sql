@@ -1,2 +1,2 @@
-COPY movies FROM 'C:\\data\\hetrec2011\\importable_movies.dat' 
+﻿COPY ratings FROM '/Users/k.falk/Dropbox/Projects/Builder/data/ratings.dat' 
 ENCODING 'LATIN1';

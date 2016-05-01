@@ -1,9 +1,11 @@
 import pandas as pd
+from decimal import *
 
 from recommender.models import Ratings, CF_Similarity
-from recommender import similarity
 from django.db import connection
+import django.utils.text
 import datetime
+import time
 
 
 class Builder:
@@ -30,11 +32,10 @@ class Builder:
 
         return movie_ratings
 
-
     @staticmethod
     def save_ratings(userid, movie_ratings):
 
-        print("saving ", len(movie_ratings))
+        print("saving %s ratings" % len(movie_ratings))
 
         db_rating_objs = []
         for rating in movie_ratings:
@@ -51,53 +52,47 @@ class Builder:
                 date_minute=today.minute, \
                 date_second=today.second, \
                 type='implicit')
-            print("saved ", r.userid, " ", r.movieid, " ", r.rating)
 
             db_rating_objs.append(r)
 
         Ratings.objects.bulk_create(db_rating_objs)
 
     @staticmethod
-    def build_similarity_model(ratings_array):
-        ratings = pd.DataFrame(ratings_array)
-        similarity_dict = dict()
+    def build_item_collaborative_model():
+        print("building item-item similarity matrix")
+        all_ratings = Ratings.objects.all()
+        ratings = pd.DataFrame(list(all_ratings.values()))
+        model = Builder.build_similarity_model(ratings)
+        Builder.save_similarity_model(model)
 
-        for item in set(ratings["id"].tolist()):
-
-            users = Ratings.objects.filter(movieid=item).values('userid')
-
-            #todo: get ratings for these users.
-
-            similarity_dict[item] = dict()
-            for user in users:
-                user_items = list(Ratings.objects.filter(userid=user['userid']))
-                print("user_items", user, " \n",user_items)
-                if item in user_items:
-                    user_items.remove(item)
-                for user_item in user_items:
-                    print("similarity calculated between %s %s" %(item, user_item.movieid))
-                    sim = similarity.cosine(ratings, item, user_item.movieid)
-                    print("similarity calculated between %s %s to be %s" %( item, user_item['movieid'], sim))
-                    similarity_dict[item][user_item] = sim
-            print(item, " : ", similarity_dict[item])
-
-        Builder.save_similarity_model(similarity_dict)
-        return similarity_dict
 
     @staticmethod
-    def save_similarity_model(model):
-        #sim = CF_Similarity.objects.latest('created')
-        print("%s similarities to be saved" % len(model))
-        print(model)
+    def add_normalized_rating(ratings):
+        print("normalizing ratings")
+        ratings['normalized_rating'] = 0.0
+        ratings['normalized_rating'] = ratings.groupby('userid')['rating'].transform(
+            (lambda x: (x.astype(float) - x.mean())))
+
+    @staticmethod
+    def save_similarity_model(model, created):
+        #add latest to version.
+
+        print("Save item-item model")
         db_sim_objs = []
-        for sim in model.items():
-            print(sim)
-            for item in sim[1]:
-                i = CF_Similarity( \
-                    source = sim[0],\
-                    target = item[0], \
-                    similarity = item[1], \
-                    version = 1\
+        for key, value in model.items():
+                print ("key: ", key)
+                source, target = key
+                if source < target:
+                    iterm = source
+                    source = target
+                    target = iterm
+
+                i = CF_Similarity(
+                    created = created,
+                    source=source,
+                    target=target,
+                    similarity=value,
+                    version=1
                 )
                 db_sim_objs.append(i)
         CF_Similarity.objects.bulk_create(db_sim_objs)

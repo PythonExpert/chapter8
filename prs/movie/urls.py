@@ -3,6 +3,7 @@ from movie import views
 
 urlpatterns = patterns('',
 	url(r'^genre/(?P<genre_name>[a-zA-Z\-]+)$', views.genre, name='genres'),
+	url(r'^movies', views.movies, name='movies'),
 	url(r'^movie/(?P<movie_id>\d+)/$', views.detail, name='detail'),
 	url(r'^$', views.index, name='index'),
 	url(r'^register/$', views.register, name='register'),

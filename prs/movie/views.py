@@ -18,7 +18,35 @@ from movie.models import UserProfile
 from movie.forms import UserForm
 from movie.forms import UserProfileForm
 
-def index(request): 
+
+def movies(request):
+    qs = request.GET
+
+    movies_list = Movies.objects.order_by('-year')
+    number_of_movies = Movies.objects.count()
+
+    genres = Genres.objects.distinct('genre')
+
+    paginator = Paginator(movies_list, 18)
+    page = qs.get('page')
+
+    try:
+        movies = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        movies = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        movies = paginator.page(paginator.num_pages)
+
+    data = {
+        'movies': movies
+    }
+
+    return JsonResponse(data)
+
+
+def index(request):
     qs = request.GET
     
     movies_list = Movies.objects.order_by('-year')
@@ -40,12 +68,12 @@ def index(request):
 
     template = get_template('index.html')
     context = RequestContext(request, {
-        'sessionid' : checkSessionId(request),
-        'user' : request.user,
+        'sessionid': checkSessionId(request),
+        'user': request.user,
         'user_id': ensureUserId(request),
         'number_of_movies': number_of_movies,
         'movies': movies,
-        'genres' : genres,
+        'genres': genres,
     })
 
     return HttpResponse(template.render(context))

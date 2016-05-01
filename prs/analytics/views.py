@@ -100,7 +100,7 @@ def get_statistics(request):
         {"items_sold": len(buy_data),
          "conversions": conversions,
          "visitors": len(visitors),
-         "sessions": len(sessions)});
+         "sessions": len(sessions)})
 
 
 def events_on_conversions(request):
@@ -123,7 +123,7 @@ def events_on_conversions(request):
 
 
 def dictfetchall(cursor):
-    "Returns all rows from a cursor as a dict"
+    " Returns all rows from a cursor as a dict "
     desc = cursor.description
     return [
         dict(zip([col[0] for col in desc], row))
@@ -151,7 +151,6 @@ def user_evidence(request, userid):
     data = dictfetchall(cursor)
     movie_ratings = Builder.generate_implicit_ratings(data)
     Builder.save_ratings(userid, movie_ratings)
-    Builder.build_similarity_model(movie_ratings)
 
     return JsonResponse(movie_ratings, safe=False)
 

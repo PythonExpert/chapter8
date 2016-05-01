@@ -109,3 +109,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Test runner with no database creation
+TEST_RUNNER = 'prs.scripts.testrunner.NoDbTestRunner'

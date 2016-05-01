@@ -9,6 +9,7 @@ from datetime import datetime
 
 from recommender.models import seeded_rec
 from recommender.Predictor import Predictor
+from recommender.builder import Builder
 
 
 def hello(request):
@@ -45,7 +46,9 @@ def get_multiseeded_recs(seed_array):
                     order by recs.target, recs.confidence \
                     limit 6')
     data = dictfetchall(cursor)
+    # data = []
     return data
+
 
 def seeded_recs(request):
     qs_seeds = request.GET.get('seeds')
@@ -73,17 +76,14 @@ def chart(request):
 
 
 def pimpit(data):
-
     movieids = []
     for d in data:
-        movieids.append(d[0])
+        movieids.append(d)
 
     print(movieids)
-    sql = 'SELECT mov.id,\
-				 mov.title,\
-                 mov.rtpictureurl \
-    		FROM public.movies mov \
-            WHERE mov.id in (%s)' % ','.join(movieids)
+    sql = 'SELECT mov.id, mov.title, mov.rtpictureurl FROM public.movies mov WHERE mov.id in (%s)' \
+          % ','.join(movieids)
+
     cursor = connection.cursor()
     cursor.execute(sql)
 
@@ -93,16 +93,21 @@ def pimpit(data):
 
 
 def cf_user(request, userid):
-
     p = Predictor(userid)
     data = p.user_collaborative_filtering(6)
     data = pimpit(data)
     return JsonResponse(data, safe=False)
 
-def cf_item(request, userid):
 
+def cf_item(request, userid):
     p = Predictor(userid)
-    data = p.item_collaborative_filtering(6)
+    recommendations = p.item_collaborative_filtering(6)
+    data = pimpit(recommendations)
+
+    for rec in data:
+        rec['rating'] = recommendations[str(rec['id'])]
+
+    data = sorted(data, key = lambda x: x['rating'], reverse=True)[:6]
     return JsonResponse(data, safe=False)
 
 
@@ -147,9 +152,9 @@ def get_items(minsupport):
 def get_itemsets():
     cursor = connection.cursor()
 
-    cursor.execute('\
-		SELECT e1.content_id as source,\
-			   e2.content_id as target, \
+    cursor.execute('''
+		SELECT e1.content_id as source,
+			   e2.content_id as target,
 			   count(e2."sessionId") as freq, \
 			   count(e2."sessionId")::float / (select count(distinct "sessionId") from "evidenceCollector_log" where event = \'buy\') as support \
 		FROM  "evidenceCollector_log" e1 \
@@ -172,7 +177,7 @@ def get_itemsets():
 		      and e1.content_id != e2.content_id \
 		GROUP BY e1.content_id, e2.content_id\
 		order by freq desc, source;\
-		')
+		''')
     data = dictfetchall(cursor)
     return data
 
@@ -314,3 +319,7 @@ def get_associationrules(request):
 
     data = dictfetchall(cursor)
     return JsonResponse(data, safe=False)
+
+
+def build_similarity_model(request):
+    Builder.build_item_collaborative_model()

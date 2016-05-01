@@ -96,27 +96,20 @@ section {
   width: 200px;
 }
 .caption{
-  float: right;
-  width: 200px;
+  width: 100px;
+  height: 30px;
 }
 
 .detail_data{
-  float: left;
-  width: 400px;
+  width: 200px;
   margin-right: 2px;
+}
 
-}
-.caption {
-    width: 300px;
-    margin-left: 10px;
-}
 .popover{
     width:200px;
     height:250px;
 }
-#details {
- float: left;
-}
+
 #genre{
 
 }

@@ -38,7 +38,7 @@
                 row.insertCell(index).innerHTML = '<a ' +
                                'onclick=\'PostEvent(\"'
                                + element.target + '\", \"rec:cf\")\''
-                              + "href='/movie/"+ element.target + "'>"
+                              + "href='/movie/"+ element.id + "'>"
                               + "<img class='movie' src='" + element.rtpictureurl + "' />"
                               + "</a>" ;
             });
@@ -119,13 +119,13 @@
            <table id="recsTable">
             </table>
     	</div>
-        <div id="cfu_recs" style="visibility: hidden">
+        <!--div id="cfu_recs" style="visibility: hidden">
             <h3>Similar users also liked (user)</h3>
             <table id="cfu_recsTable">
             </table>
-        </div>
+        </1div-->
         <div id="cfi_recs" style="visibility: hidden">
-            <h3>Similar users also liked (item)</h3>
+            <h3>Similar items</h3>
             <table id="cfi_recsTable">
             </table>
         </div>
@@ -155,7 +155,7 @@
     <script type="text/javascript">
         getTopContent();
         getRecs();
-        getCfURecs();
+        //getCfURecs();
         getCfIRecs();
     </script>
 

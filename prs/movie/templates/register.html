@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie GEEKs user registration</title>
+</head>
+<body>
+    <h1>Register with Movie GEEKs</h1>
+
+    {% if registered %}
+        Movie GEEKs <strong>thanks you for registering.</strong>
+        <a href="/">Return to the homepage.</a><br />
+        {% else %}
+        <strong>Register here</strong> <br />
+
+        <form id="user_form" method="post" action="">
+
+        {% csrf_token %}
+
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+
+        <input type="submit" name="submit" value="Register" />
+        </form>
+    {% endif %}
+</body>
+</html>

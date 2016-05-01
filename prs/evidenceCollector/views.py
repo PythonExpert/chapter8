@@ -19,5 +19,4 @@ def index(request, contentid, event):
             visitCount=visit_count, \
             sessionId=sessionid)
     l.save()
-    print(l)
     return HttpResponse('ok')

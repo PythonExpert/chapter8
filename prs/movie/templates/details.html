@@ -31,24 +31,24 @@
 
   {% if movie %} 
     <div class="left">
-        <div class="movie_area">
-        <h1>{{movie.title}}</h1>
-      <div class="movie_poster">  
-          <img  class="movie_details" src="{{movie.rtpictureurl.strip}}" />
-          <br/>
-          <a href="http://www.imdb.com/title/tt0{{movie.imdbid}}/" >Details on IMDB</a></li>
-      </div>
-     <div class="detail_data">
-        <b>Plot:</b>
-        <div class="caption" id="details">NO DATA</div>
-        <b>Genre:</b>
-        <div class="caption" id="genre">NO DATA</div>
-        <b>Year:</b>
-        <div class="caption" id="year">NO DATA</div>
-        <br/>
-        <a onclick="postEvidence('{{user_id}}', '{{movie.id}}', '{{sessionId}}','buy')" id="buy" href="http://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords={{movie.title}}">
-         <img src="{% static "images/buybutton.png" %}"/></a>
-     </div>
+      <div class="movie_area">
+          <h1>{{movie.title}}</h1>
+          <div class="movie_poster">
+              <img  class="movie_details" src="{{movie.rtpictureurl.strip}}" />
+              <br/>
+              <a href="http://www.imdb.com/title/tt0{{movie.imdbid}}/" >Details on IMDB</a></li>
+          </div>
+         <div class="detail_data">
+            <h3>Plot:</h3>
+            <div class="caption" id="details">NO DATA</div>
+            <h3>Genre:</h3>
+            <div class="caption" id="genre">NO DATA</div>
+            <h3>Year:</h3>
+            <div class="caption" id="year">NO DATA</div>
+            <br/>
+            <a onclick="postEvidence('{{user_id}}', '{{movie.id}}', '{{sessionId}}','buy')" id="buy" href="http://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords={{movie.title}}">
+            <img src="{% static "images/buybutton.png" %}"/></a>
+         </div>
       </div>
     </div>
 
